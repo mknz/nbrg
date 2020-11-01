@@ -12,13 +12,14 @@ pub fn search(filename: &str, re: &Regex, pattern: &str) {
 
     let mut is_first_match = true;
     let mut n_cell = 1;
+    let empty_vec = Vec::new();
 
-    for cell in v["cells"].as_array().unwrap_or(&Vec::new()).iter() {
+    for cell in v["cells"].as_array().unwrap_or(&empty_vec).iter() {
         if cell["cell_type"] == "code" {
             let mut n_line = 1;
             let mut is_first_match_cell = true;
-            for line in cell["source"].as_array().unwrap().iter() {
-                let mut line_str = line.as_str().unwrap().to_string();
+            for line in cell["source"].as_array().unwrap_or(&empty_vec).iter() {
+                let mut line_str = line.as_str().unwrap_or("").to_string();
 
                 // Truncate trailing newline
                 let len = line_str.trim_end_matches(&['\r', '\n'][..]).len();
