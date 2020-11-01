@@ -4,7 +4,7 @@ use regex::Regex;
 use colored::*;
 use serde_json::Value;
 
-pub fn search(filename: &String, re: &Regex, pattern: &String) {
+pub fn search(filename: &str, re: &Regex, pattern: &str) {
     let data = fs::read_to_string(filename).expect("Unable to read file");
 
     // Parse json

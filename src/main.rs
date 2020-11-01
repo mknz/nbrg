@@ -13,7 +13,7 @@ fn main() {
     }
 
     let pattern = &args[1];
-    let pattern_re = format!("({})", &args[1]).to_owned();
+    let pattern_re = format!("({})", &args[1]);
     let re = Regex::new(&pattern_re).unwrap();
 
     if args.len() == 2 {
