@@ -12,7 +12,8 @@ pub fn search(filename: &str, re: &Regex, pattern: &str) {
 
     let mut is_first_match = true;
     let mut n_cell = 1;
-    for cell in v["cells"].as_array().unwrap().iter() {
+
+    for cell in v["cells"].as_array().unwrap_or(&Vec::new()).iter() {
         if cell["cell_type"] == "code" {
             let mut n_line = 1;
             let mut is_first_match_cell = true;
