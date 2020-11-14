@@ -4,7 +4,9 @@ use regex::Regex;
 use colored::*;
 use serde_json::Value;
 
-pub fn search(filename: &str, re: &Regex, pattern: &str) {
+pub fn search(filename: &str, re: &Regex, pattern: &str) -> bool {
+    let mut found = false;
+
     let data = fs::read_to_string(filename).expect("Unable to read file");
 
     // Parse json
@@ -26,6 +28,7 @@ pub fn search(filename: &str, re: &Regex, pattern: &str) {
                 line_str.truncate(len);
 
                 if re.is_match(line_str.as_str()) {
+                    found = true;
                     // Display filename only once
                     if is_first_match {
                         println!("{}", filename.purple());
@@ -48,4 +51,5 @@ pub fn search(filename: &str, re: &Regex, pattern: &str) {
         }
         n_cell += 1;
     }
+    found
 }

@@ -15,6 +15,7 @@ fn main() {
     let pattern = &args[1];
     let pattern_re = format!("({})", &args[1]);
     let re = Regex::new(&pattern_re).unwrap();
+    let mut found = false;
 
     if args.len() == 2 {
         let walker = WalkDir::new(".").into_iter();
@@ -28,10 +29,14 @@ fn main() {
                     .unwrap_or(false)
             {
                 let filename = entry.path().to_str().unwrap().to_string();
-                nbrg::search(&filename, &re, pattern);
+                found = nbrg::search(&filename, &re, pattern);
             }
         }
-        process::exit(0);
+        if found {
+            process::exit(0);
+        } else {
+            process::exit(1);
+        }
     }
 
     let filenames = &args[2..];
@@ -40,7 +45,11 @@ fn main() {
             println!("No such file or directory");
             process::exit(2);
         }
-        nbrg::search(filename, &re, pattern)
+        found = nbrg::search(filename, &re, pattern);
     }
-    process::exit(0);
+    if found {
+        process::exit(0);
+    } else {
+        process::exit(1);
+    }
 }
