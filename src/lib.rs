@@ -4,7 +4,7 @@ use colored::*;
 use regex::Regex;
 use serde_json::Value;
 
-pub fn search(filename: &str, re: &Regex, pattern: &str) {
+pub fn search(filename: &str, re: &Regex, pattern: &str) -> bool {
     let data = fs::read_to_string(filename).expect("Unable to read file");
 
     // Parse json
@@ -12,13 +12,14 @@ pub fn search(filename: &str, re: &Regex, pattern: &str) {
         Ok(v) => v,
         Err(e) => {
             println!("{}: {:?}", filename, e);
-            return;
+            return false;
         }
     };
 
     let mut is_first_match = true;
     let mut n_cell = 1;
     let empty_vec = Vec::new();
+    let mut found = false;
 
     for cell in v["cells"].as_array().unwrap_or(&empty_vec).iter() {
         if cell["cell_type"] == "code" {
@@ -32,6 +33,7 @@ pub fn search(filename: &str, re: &Regex, pattern: &str) {
                 line_str.truncate(len);
 
                 if re.is_match(line_str.as_str()) {
+                    found = true;
                     // Display filename only once
                     if is_first_match {
                         println!("{}", filename.purple());
@@ -54,4 +56,5 @@ pub fn search(filename: &str, re: &Regex, pattern: &str) {
         }
         n_cell += 1;
     }
+    found
 }

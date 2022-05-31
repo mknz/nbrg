@@ -16,7 +16,8 @@ fn is_hidden(entry: &DirEntry) -> bool {
         .unwrap_or(false)
 }
 
-fn search_dir(dir: &str, re: &Regex, pattern: &str) {
+fn search_dir(dir: &str, re: &Regex, pattern: &str) -> bool {
+    let mut found = false;
     let walker = WalkDir::new(dir).into_iter();
     for entry in walker.filter_entry(|e| !is_hidden(e)) {
         match entry {
@@ -29,7 +30,7 @@ fn search_dir(dir: &str, re: &Regex, pattern: &str) {
                         .unwrap_or(false)
                 {
                     let filename = ent.path().to_str().unwrap().to_string();
-                    nbrg::search(&filename, &re, pattern);
+                    found = nbrg::search(&filename, &re, pattern) || found;
                 }
             }
             Err(_) => {
@@ -37,10 +38,12 @@ fn search_dir(dir: &str, re: &Regex, pattern: &str) {
             }
         }
     }
+    found
 }
 
 fn main() {
     let args: Vec<String> = env::args().collect();
+    let mut found = false;
 
     match args.len() {
         1 => {
@@ -53,15 +56,19 @@ fn main() {
             let re = Regex::new(&pattern_re).unwrap();
             match args.len() {
                 2 => {
-                    search_dir(".", &re, pattern);
+                    found = search_dir(".", &re, pattern);
                 }
                 _ => {
                     for arg in &args[2..] {
-                        search_dir(&arg, &re, pattern);
+                        found = search_dir(&arg, &re, pattern) || found;
                     }
                 }
             }
-            process::exit(0);
         }
+    }
+    if found {
+        process::exit(0);
+    } else {
+        process::exit(1);
     }
 }
