@@ -8,7 +8,13 @@ pub fn search(filename: &str, re: &Regex, pattern: &str) {
     let data = fs::read_to_string(filename).expect("Unable to read file");
 
     // Parse json
-    let v: Value = serde_json::from_str(&data).unwrap();
+    let v: Value = match serde_json::from_str(&data) {
+        Ok(v) => v,
+        Err(e) => {
+            println!("{}: {:?}", filename, e);
+            return;
+        }
+    };
 
     let mut is_first_match = true;
     let mut n_cell = 1;

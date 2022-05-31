@@ -2,11 +2,23 @@ use std::env;
 use std::process;
 
 use regex::Regex;
-use walkdir::WalkDir;
+use walkdir::{DirEntry, WalkDir};
+
+fn is_hidden(entry: &DirEntry) -> bool {
+    let filename = entry.file_name().to_str().unwrap();
+    if filename.eq(".") || filename.eq("..") {
+        return false;
+    };
+    entry
+        .file_name()
+        .to_str()
+        .map(|s| s.starts_with("."))
+        .unwrap_or(false)
+}
 
 fn search_dir(dir: &str, re: &Regex, pattern: &str) {
     let walker = WalkDir::new(dir).into_iter();
-    for entry in walker {
+    for entry in walker.filter_entry(|e| !is_hidden(e)) {
         match entry {
             Ok(ent) => {
                 if ent.file_type().is_file()
