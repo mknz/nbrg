@@ -1,7 +1,7 @@
 use std::fs;
 
-use regex::Regex;
 use colored::*;
+use regex::Regex;
 use serde_json::Value;
 
 pub fn search(filename: &str, re: &Regex, pattern: &str) {
